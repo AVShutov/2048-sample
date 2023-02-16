@@ -26,4 +26,4 @@ jobs:
     - name: Build the Docker image
       run: |
         docker build . --file Dockerfile --tag ghcr.io/avshutov/avs-2048:latest
-        docker push
+        docker push --all-tags ghcr.io/avshutov/avs-2048
