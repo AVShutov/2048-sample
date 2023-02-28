@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: 2048-game
-  pullPolicy: Never
+  repository: ghcr.io/avshutov/avs-2048 # 2048-game
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.0.0"
+  tag: latest # "1.0.0"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -16,7 +16,7 @@ fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: true
+  create: false
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
@@ -41,20 +41,23 @@ service:
   port: 80
 
 ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  enabled: true
+  className: "public"
+#  annotations: {}
+  annotations:
+#    kubernetes.io/ingress.class: nginx
+#    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: lets-encrypt
   hosts:
-    - host: chart-example.local
+    - host: avs-it.net # chart-example.local
       paths:
         - path: /
           pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+#  tls: []
+  tls:
+    - secretName: 2048-game-tls
+      hosts:
+        - avs-it.net
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

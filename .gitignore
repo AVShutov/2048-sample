@@ -1,0 +1,16 @@
+.DS_Store
+*.env
+*.ignore
+.terraform
+.terraform.tfstate.lock.info
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfvars
+old-chips-repo
+*.tfstate
+# Cluster overview script
+__pycache__
+*.tfplan
+# VScode
+.vscode/settings.json
+tfplan.json
