@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "avs-2048.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "avs-2048.labels" . | nindent 4 }}
 spec:

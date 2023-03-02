@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: 2048-app
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/avshutov/2048-sample.git
+    targetRevision: HEAD
+    path: charts
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: 2048-game
+  syncPolicy:
+    automated: {}
