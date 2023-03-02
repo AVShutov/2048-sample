@@ -1,5 +1,13 @@
 # Terraform state will be stored in S3
 terraform {
+  required_version = ">= 0.13"
+
+  required_providers {
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.7.0"
+    }
+  }
   backend "s3" {
     bucket = "tf-state-2048-ashutau"
     key    = "terraform.tfstate"
@@ -144,7 +152,7 @@ resource "aws_instance" "master" {
   # associate_public_ip_address = true
   # user_data              = file("k8s.sh")
   user_data_replace_on_change = true
-  user_data = <<-EOF
+  user_data                   = <<-EOF
     #!/bin/bash
     sudo snap install microk8s --classic --channel=1.26
     sudo usermod -a -G microk8s ubuntu
@@ -191,7 +199,7 @@ resource "null_resource" "download_kubeconfig_file" {
     EOF
   }
   triggers = {
-#    instance_id = aws_instance.master.id
+    #    instance_id = aws_instance.master.id
     wait_for_bootstrap_to_finish = null_resource.wait_for_bootstrap_to_finish.id
   }
 }
@@ -205,37 +213,37 @@ provider "kubectl" {
 }
 
 data "kubectl_file_documents" "namespace" {
-    content = file("../argocd/namespace.yaml")
-} 
+  content = file("../argocd/namespace.yaml")
+}
 
 data "kubectl_file_documents" "argocd" {
-    content = file("../argocd/install.yaml")
+  content = file("../argocd/install.yaml")
 }
 
 resource "kubectl_manifest" "namespace" {
-    count     = length(data.kubectl_file_documents.namespace.documents)
-    yaml_body = element(data.kubectl_file_documents.namespace.documents, count.index)
-    override_namespace = "argocd"
+  count              = length(data.kubectl_file_documents.namespace.documents)
+  yaml_body          = element(data.kubectl_file_documents.namespace.documents, count.index)
+  override_namespace = "argocd"
 }
 
 resource "kubectl_manifest" "argocd" {
-    depends_on = [
-      kubectl_manifest.namespace,
-    ]
-    count     = length(data.kubectl_file_documents.argocd.documents)
-    yaml_body = element(data.kubectl_file_documents.argocd.documents, count.index)
-    override_namespace = "argocd"
+  depends_on = [
+    kubectl_manifest.namespace,
+  ]
+  count              = length(data.kubectl_file_documents.argocd.documents)
+  yaml_body          = element(data.kubectl_file_documents.argocd.documents, count.index)
+  override_namespace = "argocd"
 }
 
 data "kubectl_file_documents" "app" {
-    content = file("../argocd/2048-app.yaml")
+  content = file("../argocd/2048-app.yaml")
 }
 
 resource "kubectl_manifest" "app" {
-    depends_on = [
-      kubectl_manifest.argocd,
-    ]
-    count     = length(data.kubectl_file_documents.app.documents)
-    yaml_body = element(data.kubectl_file_documents.app.documents, count.index)
-    override_namespace = "argocd"
+  depends_on = [
+    kubectl_manifest.argocd,
+  ]
+  count              = length(data.kubectl_file_documents.app.documents)
+  yaml_body          = element(data.kubectl_file_documents.app.documents, count.index)
+  override_namespace = "argocd"
 }
