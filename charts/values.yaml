@@ -12,7 +12,7 @@ image:
 
 imagePullSecrets: []
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "app-2048"
 
 serviceAccount:
   # Specifies whether a service account should be created
