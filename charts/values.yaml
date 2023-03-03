@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/avshutov/avs-2048 # 2048-game
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: latest # "1.0.0"
+  tag: 0.0.1
 
 imagePullSecrets: []
 nameOverride: ""
