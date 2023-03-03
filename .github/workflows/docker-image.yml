@@ -44,3 +44,4 @@ jobs:
         git config --global user.email github-actions@github.com
         git add ${valuesFilePath}
         git commit -m "Automatic tag update"
+        git push
