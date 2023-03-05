@@ -27,6 +27,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         action: ${{ github.event.inputs.action }}
       run: |
+        mkdir ~/.kube
         terraform fmt -check
         terraform init
         terraform validate -no-color
