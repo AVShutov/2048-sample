@@ -16,7 +16,7 @@ resource "aws_key_pair" "generated_key" {
   key_name   = var.key_name
   public_key = tls_private_key.terrafrom_generated_private_key.public_key_openssh
 
-  # Store private key :  Generate and save private key(aws_keys_pairs.pem) in current directory
+  # Store private key :  Generate and save private key
   provisioner "local-exec" {
     command = <<-EOT
       echo '${tls_private_key.terrafrom_generated_private_key.private_key_pem}' > ~/.ssh/${var.key_name}.pem
@@ -59,7 +59,7 @@ resource "aws_route53_record" "www" {
 }
 
 #------------------------------------------------------------------------------#
-# EC2 instances
+# EC2 instance
 #------------------------------------------------------------------------------#
 
 data "aws_ami" "ubuntu" {
@@ -73,9 +73,8 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_instance" "master" {
-  ami           = data.aws_ami.ubuntu.image_id # "ami-0dfcb1ef8550277af"
-  instance_type = var.master_instance_type     # "t3.small"
-#  key_name      = "n_virginia_key"
+  ami           = data.aws_ami.ubuntu.image_id
+  instance_type = var.master_instance_type
   key_name      = var.key_name
   subnet_id     = var.subnet_id
   vpc_security_group_ids = var.vpc_security_group_ids
