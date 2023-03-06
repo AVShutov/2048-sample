@@ -22,4 +22,6 @@ Cloud: AWS
 
 3. kubeconfig will be copied to your local `~/.kube/microk8s`
 
+4. (Optional) Build and push to ghcr.io the new docker container tag with [GitHub Action](https://github.com/AVShutov/2048-sample/actions/workflows/docker-image.yml). The new image tag will be redeployed automatically via ArgoCD.
+
 Note. In case you have your own domain you can attach it to AWS Elastic ip you'll get from the terraform output. Cert-manager will take care of the TLS certificates.
