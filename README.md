@@ -20,4 +20,6 @@ Cloud: AWS
     terraform apply
     ```
 
+3. kubeconfig will be copied to your local `~/.kube/microk8s`
+
 Note. In case you have your own domain you can attach it to AWS Elastic ip you'll get from the terraform output. Cert-manager will take care of the TLS certificates.
