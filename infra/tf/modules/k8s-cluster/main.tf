@@ -16,13 +16,19 @@ resource "aws_key_pair" "generated_key" {
   key_name   = var.key_name
   public_key = tls_private_key.terrafrom_generated_private_key.public_key_openssh
 
-  # Store private key :  Generate and save private key
-  provisioner "local-exec" {
-    command = <<-EOT
-      echo '${tls_private_key.terrafrom_generated_private_key.private_key_pem}' > ~/.ssh/${var.key_name}.pem
-      chmod 400 ~/.ssh/${var.key_name}.pem
-    EOT
-  }
+  # # Store private key :  Generate and save private key
+  # provisioner "local-exec" {
+  #   command = <<-EOT
+  #     echo '${tls_private_key.terrafrom_generated_private_key.private_key_pem}' > ~/.ssh/${var.key_name}.pem
+  #     chmod 400 ~/.ssh/${var.key_name}.pem
+  #   EOT
+  # }
+}
+
+resource "local_sensitive_file" "k8s-key" {
+  content  = tls_private_key.terrafrom_generated_private_key.private_key_pem
+  filename = "${path.module}/${var.key_name}.pem"
+  file_permission = "0400"
 }
 
 #------------------------------------------------------------------------------#
@@ -100,7 +106,7 @@ resource "aws_instance" "master" {
 resource "null_resource" "wait_for_bootstrap_to_finish" {
   provisioner "local-exec" {
     command = <<-EOF
-    alias ssh='ssh -q -i ~/.ssh/${var.key_name}.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+    alias ssh='ssh -q -i ${path.module}/${var.key_name}.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
     while true; do
       sleep 2
       ! ssh ubuntu@${aws_eip.master.public_ip} [[ -f /home/ubuntu/microk8s ]] >/dev/null && continue
@@ -120,7 +126,7 @@ resource "null_resource" "wait_for_bootstrap_to_finish" {
 resource "null_resource" "download_kubeconfig_file" {
   provisioner "local-exec" {
     command = <<-EOF
-    alias microk8s_scp='scp -q -i ~/.ssh/${var.key_name}.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+    alias microk8s_scp='scp -q -i ${path.module}/${var.key_name}.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
     microk8s_scp ubuntu@${aws_eip.master.public_ip}:~/microk8s ~/.kube/microk8s
     sed -i "s/server:.*/server: https:\/\/${aws_eip.master.public_ip}:16443/g" ~/.kube/microk8s
     EOF

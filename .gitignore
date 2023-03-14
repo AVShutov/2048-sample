@@ -14,3 +14,5 @@ __pycache__
 # VScode
 .vscode/settings.json
 tfplan.json
+# Sensitive data
+*.pem
